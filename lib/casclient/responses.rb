@@ -171,6 +171,7 @@ module CASClient
   class LoginResponse
     attr_reader :tgt, :ticket, :service_redirect_url
     attr_reader :failure_message
+    attr_reader :response_cookie
 
     def initialize(http_response = nil, options={})
       parse_http_response(http_response) if http_response
@@ -182,7 +183,8 @@ module CASClient
       # FIXME: this regexp might be incorrect...
       if header['set-cookie'] && 
         header['set-cookie'].first && 
-        header['set-cookie'].first =~ /tgt=([^&]+);/
+        header['set-cookie'].first =~ /tgt=([^&]+)/
+        @response_cookie = CGI::Cookie::parse(header['set-cookie'].first)
         @tgt = $~[1]
       end
 
